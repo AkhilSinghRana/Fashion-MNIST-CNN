@@ -1,5 +1,5 @@
 jupyterlab
 numpy
-
+matplotlib
 #tensorflow-gpu==1.15 #Uncomment this if you have CUDA enable GPU, Suggested for better performance
 tensorflow>=2.1
