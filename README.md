@@ -1,10 +1,10 @@
 ***
 
 # Fashion-MNIST CNN Benchmarking
+Fashion MNIST is a dataset which is meant to replace tradidional MNIST dataset, because it is over cited in many research papers now. It is super easy to get high accuracy results with classic MNIST-dataset. If you haven't hear about FASHION MNIST dataset before please visit the official github repository to understand the challenge --> https://github.com/zalandoresearch/fashion-mnist, before you continue reading this project. If you already are aware of the dataset, this repository will give you an idea how you can create your deepCNN models in order to achieve as high accuracy as 96%.
 
-
-## Data
-
+## Data-Preview
+![Sample Fashion-MNIST dataset](screenshots/fashion-mnist-sprite.png)
 
 ## Dependencies:
 
@@ -34,26 +34,18 @@ virtualenv env_name -p python3
 
 source env_name/bin/activate
 
-pip install -r requirements.txt
+pip install -e .
 ```
 
-Now you should be ready to start a training or predict the trained model on any image(RGB/Gray) both are automatically handeled by the code/predict.py code!	
+Now you should be ready to start a training the models provided with this repository
 
 Sample Train command:
 	
-- python code/main.py --mode train
+- python code/main.py --mode train --num_epochs 10
 
 
 ## Options for main.py
-	--load_dir = directory where the model is saved after training
-
-	--exp_name = name of the experiment that was mentioned during training defaults to Experiment_1. This is also taken as the name of the model while saving it.
-	
-	--predict_image = Path to the image #This can be both "either RGB or Gray Scale image". Predict.py makes sure that the proper preprocessing and inference pipelines are run to this image before getting the model predictions.
-
-	The project was coded to provide maximum flexibilty, therefore, you can check more parameters that can be tweeked in code/options.py or simply run 
-	
-	"python code/main.py --help"
+-	python code/main.py --help
 
 
 ## Approach
