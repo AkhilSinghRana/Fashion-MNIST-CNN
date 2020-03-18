@@ -1,118 +1,92 @@
-import os, glob, random
-from tensorflow.keras.preprocessing import image as image_preprocessing
-import pandas as pd
-from skimage import io
-from sklearn.model_selection import train_test_split
+"""
+All Data preprocessing and augmentation is done here
+"""
 
-from util import preprocessing
+import tensorflow as tf
+from tensorflow import keras
+from tensorflow.keras.preprocessing.image import ImageDataGenerator
+
+# Helper libraries
+import numpy as np
+import matplotlib.pyplot as plt
 
 class DataLoader():
+    """
+        A class for data loading and preprocessing 
+    """
     def __init__(self, args=None):
-        print("Initializing DataLoader ...")
-        self.args = args
-        self.num_classes = 0 # Number of class to train on
-        self.num_train_images = 0 # Number of training samples
-        self.num_val_images = 0 # Number of validation samples
-        self.num_test_images = 0 # number of test samples
+        self.args=args
+
+        """
+        # Define the options for augmentation
+        """
+        self.datagen = ImageDataGenerator(
+            rotation_range=10,
+            horizontal_flip=True,
+            fill_mode='nearest'
+        )
+    def generateData(self):
+        fashion_mnist = keras.datasets.fashion_mnist
+        (X_train, y_train), (X_test, y_test) = fashion_mnist.load_data()
+
+        print("Train Samples:", len(X_train))
+        print("Test Samples:",  len(X_test))
+
+        return (X_train, y_train), (X_test, y_test)
+
+
+    def image_augmentation(self,image, nb_of_augmentation):
+        '''
+        Generates new images bei augmentation
+        image : raw image
+        nb_augmentation: number of augmentations
+        images: array with new images
+        '''
+        images = []
+        image = image.reshape(1, self.args.img_h, self.args.img_w, self.args.num_channels)
+        i = 0
+        for x_batch in self.datagen.flow(image, batch_size=1):
+            images.append(x_batch)
+            i += 1
+            if i >= nb_of_augmentation:
+                # interrupt augmentation
+                break
+        return images
+
+    def preprocess_data(self, images, targets, use_augmentation=False, nb_of_augmentation=1):
+        """
+        images: raw image
+        targets: target label
+        use_augmentation: True if augmentation should be used
+        nb_of_augmentation: If use_augmentation=True, number of augmentations
+        """
+        print("Augmenting images...")
+        X = []
+        y = []
+        for x_, y_ in zip(images, targets):
+            
+            # scaling pixels between 0.0-1.0
+            x_ = x_ / 255.
+            x_ = x_.reshape(self.args.img_h, self.args.img_w, self.args.num_channels)
+            # data Augmentation
+            if use_augmentation:
+                argu_img = self.image_augmentation(x_, nb_of_augmentation)
+                for a in argu_img:
+                    reshaped_a = a.reshape(self.args.img_h, self.args.img_w, self.args.num_channels)
+                    X.append(reshaped_a)
+                    y.append(y_)
+                    
+                    
+            X.append(x_)
+            y.append(y_)
+        print('*Preprocessing completed: %i samples\n' % len(X))
+        return np.array(X), tf.keras.utils.to_categorical(y)
+
+
+if __name__ == "__main__":
+    args = options.parseArguments()
+    print("Call the script from train or predict.py!")
     
-    def checkDataValidity(self, image_dir):
-        #check if the images passed are GrayScale, if not let's preprocess them first
-        images = glob.glob(image_dir+"/*.png")
-        
-        random_image = images[random.randint(0, len(images)-1)] # Get a randome image from the directory
-        raw_image = io.imread(random_image) #read the image to numpy array
-        # Check if number of channels is 3 or more
-        raw_image_dim =  raw_image.ndim
-        if raw_image_dim > 2:
-            save_dir = os.path.join(self.args.input_dir, "GrayImages")
-            if not os .path.exists(save_dir):
-                os.makedirs(save_dir)
-            for image in images:                
-                gray_image = preprocessing.convertToGray(image)
-                image_name = image.split("/")[-1]
-                print("converting ",image_name, " to Gray Image")
-                
-                io.imsave(save_dir+"/"+image_name, gray_image)
-            image_dir = save_dir
-        
-        return image_dir
 
-    def dataGenerator(self):
-        print("Looking for the data at -->", self.args.input_dir)
-        
-        image_dir = os.path.join(self.args.input_dir , self.args.images_dir)
-        image_dir = self.checkDataValidity(image_dir) #Check if the images are gray scale
-        csv_filename  = os.path.join(self.args.input_dir, self.args.csv_filename)
-
-        #Read the main CSV
-        data = pd.read_csv(csv_filename)
-        # Do a Split for train and validation
-        train, val = train_test_split(data, test_size=0.2) # 80-20 split
-        self.num_classes = len(data[" LABEL"].value_counts())
-        self.num_train_images = len(train["IMAGE_FILENAME"].value_counts())
-        self.num_test_images = len(val["IMAGE_FILENAME"].value_counts())
-        self.num_val_images = self.num_test_images
-        
-
-        train_csv = train.to_csv (os.path.join(self.args.input_dir, "train.csv"), index = None, header=True) #Don't forget to add '.csv' at the end of the path
-        val_csv = val.to_csv (os.path.join(self.args.input_dir, "test.csv"), index = None, header=True) #Don't forget to add '.csv' at the end of the path
-
-        print(" Number of Classes : {} -----------".format(self.num_classes))
-        
-        if self.args.mode == "train":
-            # Create a data generator that generates the data on the fly with data augmentation
-            train_image_gen = image_preprocessing.ImageDataGenerator(rescale=1./255, horizontal_flip= True)
-            val_image_gen = image_preprocessing.ImageDataGenerator(rescale=1./255)
-            
-            # Data Generator with specific batch size from dataframe
-            train_data_gen = train_image_gen.flow_from_dataframe(train,
-                                                            directory=image_dir,
-                                                            x_col='IMAGE_FILENAME',
-                                                            y_col=' LABEL',
-                                                            target_size=(self.args.img_h, self.args.img_h),
-                                                            color_mode='grayscale',
-                                                            Classes = ["FULL_VISIBILITY", "PARTIAL_VISIBILITY", "NO_VISIBILITY"],
-                                                            class_mode='categorical',
-                                                            batch_size=self.args.batch_size,
-                                                            shuffle=True,
-                                                            interpolation='nearest',
-                                                            validate_filenames=True)
-                                        
-            val_data_gen = val_image_gen.flow_from_dataframe(val,
-                                                            directory=image_dir,
-                                                            x_col='IMAGE_FILENAME',
-                                                            y_col=' LABEL',
-                                                            weight_col=None,
-                                                            target_size=(self.args.img_h, self.args.img_h),
-                                                            color_mode='grayscale',
-                                                            Classes = ["FULL_VISIBILITY", "PARTIAL_VISIBILITY", "NO_VISIBILITY"],
-                                                            class_mode='categorical',
-                                                            batch_size=self.args.batch_size,
-                                                            shuffle=True,
-                                                            interpolation='nearest',
-                                                            validate_filenames=True)
-
-            
-            return train_data_gen, val_data_gen
-        
-        elif self.args.mode == "predict":
-            
-            test_image_gen = image_preprocessing.ImageDataGenerator(rescale=1./255)
-
-            #Create test data gen
-            test_data_gen = test_image_gen.flow_from_directory(directory=self.args.image_dir,
-                                                            x_col='IMAGE_FILENAME',
-                                                            y_col=' LABEL',
-                                                            weight_col=None,
-                                                            target_size=(self.args.img_h, self.args.img_h),
-                                                            color_mode='grayscale',
-                                                            class_mode='categorical',
-                                                            batch_size=self.args.batch_size,
-                                                            shuffle=True,
-                                                            interpolation='nearest',
-                                                            validate_filenames=True)
-
-            return test_data_gen
-
-        else:
-            raise NotImplementedError
+    
+    

@@ -1,17 +1,15 @@
 ######################
-#   CNN model Architecture
+#   CNN model Architectures
 ######################
-# We use tf 1.15 and tf.Keras API
+# We use tf 2.1 and tf.Keras API
 
 ## Import packages
-import pandas as pd
 import tensorflow as tf
 
 import tensorflow.keras as keras
 from tensorflow.keras.models import Sequential
 from tensorflow.keras.layers import Dense, Conv2D, Flatten, Dropout, MaxPooling2D, Activation, BatchNormalization
 import tensorflow.keras.optimizers as optimizers
-
 
 
 #Load data generator and preprocessing module
@@ -26,42 +24,101 @@ import matplotlib.pyplot as plt
 class GenerateModel():
     
     # Initialize the class, with some default variables
-    def __init__(self, args=None, num_classes=0):
+    def __init__(self, args=None):
         """
             args = Argument parser from the options.py file
         """
         self.args = args
-        self.num_classes = num_classes
 
     # This function defines the CNN architecture
-    def cnn_model(self):
+    def cnn_model(self, modelArchitecture="Custom"):
 
-        model = Sequential()
-
-        model.add(Conv2D(16, (3, 3), padding='same',
-                        input_shape=(self.args.img_h, self.args.img_w, self.args.num_channels)))
-        model.add(Activation('relu'))
-        model.add(Conv2D(32, (3, 3)))
-        model.add(BatchNormalization())
-        model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Dropout(0.25))
-
-
-        model.add(Conv2D(64, (3, 3)))
-        model.add(BatchNormalization())
-        model.add(Activation('relu'))
-        model.add(MaxPooling2D(pool_size=(2, 2)))
-        model.add(Dropout(0.25))
-
-        model.add(Flatten())
-        model.add(Dense(512))
-        model.add(Activation('relu'))
-        model.add(Dropout(0.5))
+        model = tf.keras.Sequential()
         
-        model.add(Dense(self.num_classes, activation='softmax'))
+        if self.args.model_arch=="custom":
+            """
+                The customized model is selected after finetuning it many time to reach the best results for this problem
+            """
+            model.add(tf.keras.layers.InputLayer(input_shape=(self.args.img_h, self.args.img_w, self.args.num_channels)))
+            # Normalization
+            model.add(tf.keras.layers.BatchNormalization())
+            
+            # Conv + Maxpooling
+            model.add(tf.keras.layers.Convolution2D(64, (4, 4), padding='same', activation='relu'))
+            model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
 
+            # Dropout
+            model.add(tf.keras.layers.Dropout(0.1))
+            
+            # Conv + Maxpooling
+            model.add(tf.keras.layers.Convolution2D(64, (4, 4), activation='relu'))
+            model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
+
+            # Dropout
+            model.add(tf.keras.layers.Dropout(0.3))
+
+            # Converting 3D feature to 1D feature Vector
+            model.add(tf.keras.layers.Flatten())
+
+            # Fully Connected Layer
+            model.add(tf.keras.layers.Dense(256, activation='relu'))
+
+            # Dropout
+            model.add(tf.keras.layers.Dropout(0.5))
+            
+            # Fully Connected Layer
+            model.add(tf.keras.layers.Dense(64, activation='relu'))
+            
+            # Normalization
+            model.add(tf.keras.layers.BatchNormalization())
+
+            model.add(tf.keras.layers.Dense(self.args.num_classes, activation='softmax'))
         
+        elif self.args.model_arch=="vgg_like":
+            # first CONV => RELU => CONV => RELU => POOL layer set
+            model.add(Conv2D(32, (3, 3), padding="same",input_shape=(self.args.img_h,self.args.img_w,self.args.num_channels)))
+            model.add(Activation("relu"))
+            model.add(BatchNormalization(axis=3))
+            model.add(Conv2D(32, (3, 3), padding="same"))
+            model.add(Activation("relu"))
+            model.add(BatchNormalization(axis=3))
+            model.add(MaxPooling2D(pool_size=(2, 2)))
+            model.add(Dropout(0.25))
+
+            # second CONV => RELU => CONV => RELU => POOL layer set
+            model.add(Conv2D(64, (3, 3), padding="same"))
+            model.add(Activation("relu"))
+            model.add(BatchNormalization(axis=3))
+            model.add(Conv2D(64, (3, 3), padding="same"))
+            model.add(Activation("relu"))
+            model.add(BatchNormalization(axis=3))
+            model.add(MaxPooling2D(pool_size=(2, 2)))
+            model.add(Dropout(0.25))
+
+            # first (and only) set of FC => RELU layers
+            model.add(Flatten())
+            model.add(Dense(512))
+            model.add(Activation("relu"))
+            model.add(BatchNormalization())
+            model.add(Dropout(0.5))
+
+            # softmax classifier
+            model.add(Dense(self.args.num_classes))
+            model.add(Activation("softmax"))
+
+        elif self.args.model_arch=="transfer_learning":
+            """
+                Generate pretrained model for transfer Learning
+                  -->
+            """
+            print("Generating model")
+        else:
+            raise NotImplementedError
+
+        """
+            ################################
+            Compile the model now with different Optimizers, again flexibility to use either adam or RMSProp is given
+        """
         # Model compile defines the otimizer and loss function to choose
         if self.args.optimizer=="RMS":
             model.compile(optimizers.RMSprop(lr=0.0005, decay=1e-6),
@@ -75,10 +132,10 @@ class GenerateModel():
             print("Optimizer not supported yet check your model.py for valid optimizers")
             raise NotImplementedError
         
-        # Generate the model Summary
-        print("Model Details!")
-        model.summary()
         return model
+
+    def model_summary(self, model=None):
+        model.summary()
 
     def saveModel(self, model):
         # Let's save this model now
