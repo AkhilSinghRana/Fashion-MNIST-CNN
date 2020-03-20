@@ -31,7 +31,7 @@ class GenerateModel():
         self.args = args
 
     # This function defines the CNN architecture
-    def cnn_model(self, modelArchitecture="Custom"):
+    def cnn_model(self, modelArchitecture="custom"):
 
         model = tf.keras.Sequential()
         
@@ -39,6 +39,7 @@ class GenerateModel():
             """
                 The customized model is selected after finetuning it many time to reach the best results for this problem
             """
+            
             model.add(tf.keras.layers.InputLayer(input_shape=(self.args.img_h, self.args.img_w, self.args.num_channels)))
             # Normalization
             model.add(tf.keras.layers.BatchNormalization())
@@ -106,12 +107,33 @@ class GenerateModel():
             model.add(Dense(self.args.num_classes))
             model.add(Activation("softmax"))
 
-        elif self.args.model_arch=="transfer_learning":
+        elif self.args.model_arch=="v1":
             """
-                Generate pretrained model for transfer Learning
-                  -->
+                first version
             """
-            print("Generating model")
+            print("Version 1")
+            model = Sequential()
+            model.add(Conv2D(16, (3, 3), padding='same',
+                            input_shape=(self.args.img_h, self.args.img_w, self.args.num_channels)))
+            model.add(Activation('relu'))
+            model.add(Conv2D(32, (3, 3)))
+            model.add(BatchNormalization())
+            model.add(Activation('relu'))
+            model.add(MaxPooling2D(pool_size=(2, 2)))
+            model.add(Dropout(0.25))
+
+
+            model.add(Conv2D(64, (3, 3)))
+            model.add(BatchNormalization())
+            model.add(Activation('relu'))
+            model.add(MaxPooling2D(pool_size=(2, 2)))
+            model.add(Dropout(0.25))
+
+            model.add(Flatten())
+            model.add(Dense(512))
+            model.add(Activation('relu'))
+            model.add(Dropout(0.5))
+            model.add(Dense(self.args.num_classes, activation='softmax'))
         else:
             raise NotImplementedError
 

@@ -84,8 +84,8 @@ class DataLoader():
 
 
 if __name__ == "__main__":
-    args = options.parseArguments()
-    print("Call the script from train or predict.py!")
+    
+    print("Call the script from train.py or main.py")
     
 
     
