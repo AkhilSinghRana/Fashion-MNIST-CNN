@@ -1,7 +1,8 @@
 env/*
 .vscode**
-**__pycache**
+**__pycache__
+**.pyc
 
 saved_models/*
-code/util/__pycache__/*
 *.ipynb_check*
+code/util/__pycache__/__init__.cpython-37.pyc
