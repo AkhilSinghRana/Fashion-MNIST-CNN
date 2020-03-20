@@ -60,6 +60,9 @@ Sample Train command:
 	
 - python code/main.py --mode train --num_epochs 10
 
+Run Sample Jupyter Notebook --> [Jupyter Notebook](./notebooks/classification_main-VGG_Like.ipynb)
+- jupyter lab 
+
 
 ## Options for main.py
 To check all the options that are provided for flexibilty run below command and feel to play around with these parameters. TO achieve the results run the default parameters.
@@ -69,7 +72,7 @@ To check all the options that are provided for flexibilty run below command and 
 
 ## Approach
 
-After trying different modifications to the network architecture (like Batch Normalization, different Dropout regularizers) and data Augmentation techniques, I think following 3 models are worth showing the evolution where I was able to reach train accuracy of upto ~98.9%
+After trying different modifications to the network architecture (like Batch Normalization, different Dropout regularizers) and data Augmentation techniques, I think following 3 models are worth showing the evolution where I was able to reach train accuracy of upto ~98.9%. All 3 models are defined inside [code](./code/util/model.py) and can be easily selected for training by running "python main.py --model_arch vgg_like --mode train --num_epochs 10"
 
 | Architecture 1: 
 ---------------|
