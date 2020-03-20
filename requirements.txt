@@ -2,6 +2,6 @@ jupyterlab
 numpy
 matplotlib
 sklearn
-#tensorflow-gpu>=2.1 #Uncomment this if you have CUDA enable GPU, Suggested for better performance
-tensorflow>=2.1
+tensorflow-gpu>=2.1 #Uncomment this if you have CUDA enable GPU, Suggested for better performance
+#tensorflow>=2.1
 tensorflow_datasets
