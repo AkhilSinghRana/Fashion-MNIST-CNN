@@ -8,12 +8,6 @@ def parseArguments():
     # Load the model for training testing or to continue the training from a specific checkpoint!
     parser.add_argument('--mode', help='train/predict', default="train", type=str)
     
-    # Path to the dataset Directory. It should have the below Folder Structure, if not have a look at preprocessing.py file provided in util folder
-
-    ################# Folder Structure:###########
-              
-    ###############################################
-
     
     # Tensorflow Graph,Session,model based parametes
     parser.add_argument('--model_arch', help='Model architecture to use custom/vgg_like/transfer_learning', default='custom')

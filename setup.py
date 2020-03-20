@@ -1,11 +1,7 @@
 import os 
 from setuptools import setup, find_packages
 
-
 #Use README file for long description of the project
-##     RootDir
-###    - README.md
-###    - setup.py
 
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()

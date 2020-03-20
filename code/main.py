@@ -10,7 +10,7 @@ if __name__ == "__main__":
         train.train(args)
 
     elif args.mode=="predict":
-        predict.predict(args)
+        raise NotImplementedError
 
     else:
         raise NotImplementedError
