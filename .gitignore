@@ -1,4 +1,7 @@
 env/*
 .vscode**
 **__pycache**
+
 saved_models/*
+code/util/__pycache__/*
+*.ipynb_check*
