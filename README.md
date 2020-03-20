@@ -1,6 +1,21 @@
 ***
 
 # Fashion-MNIST CNN Benchmarking (reached accuracy upto ~98%)
+
+<details><summary>Table of Contents</summary><p>
+
+- [Fashion-MNIST CNN Benchmarking (reached accuracy upto ~98%)](#fashion-mnist-cnn-benchmarking-reached-accuracy-upto-98)
+  - [Introduction:](#introduction)
+  - [Data-Preview](#data-preview)
+  - [Dependencies:](#dependencies)
+  - [Run Instructions](#run-instructions)
+  - [Options for main.py](#options-for-mainpy)
+  - [Approach](#approach)
+  - [Results:](#results)
+  - [Future Work](#future-work)
+</p></details><p></p>
+
+## Introduction:
 Fashion MNIST is a dataset which is meant to replace tradidional MNIST dataset, because it is over cited in many research papers now. It is super easy to get high accuracy results with classic MNIST-dataset. If you haven't hear about FASHION MNIST dataset before please visit the official github repository to understand the challenge --> https://github.com/zalandoresearch/fashion-mnist, before you continue reading this project. If you already are aware of the dataset, this repository will give you an idea how you can create your deepCNN models in order to achieve as high accuracy as 98%.
 
 ## Data-Preview
