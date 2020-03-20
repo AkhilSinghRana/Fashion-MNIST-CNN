@@ -1,24 +1,23 @@
 ***
 
-# Fashion-MNIST CNN Benchmarking (reached accuracy upto ~98%)
+# Fashion-MNIST CNN Benchmarking Accuracy upto ~98%)
 
-<details><summary>Table of Contents</summary><p>
+<summary>Table of Contents</summary>
 
-- [Fashion-MNIST CNN Benchmarking (reached accuracy upto ~98%)](#fashion-mnist-cnn-benchmarking-reached-accuracy-upto-98)
+- [Fashion-MNIST CNN Benchmarking Accuracy upto ~98%)](#fashion-mnist-cnn-benchmarking-accuracy-upto-98)
   - [Introduction:](#introduction)
-  - [Data-Preview](#data-preview)
   - [Dependencies:](#dependencies)
   - [Run Instructions](#run-instructions)
   - [Options for main.py](#options-for-mainpy)
   - [Approach](#approach)
   - [Results:](#results)
   - [Future Work](#future-work)
-</p></details><p></p>
+
 
 ## Introduction:
+
 Fashion MNIST is a dataset which is meant to replace tradidional MNIST dataset, because it is over cited in many research papers now. It is super easy to get high accuracy results with classic MNIST-dataset. If you haven't hear about FASHION MNIST dataset before please visit the official github repository to understand the challenge --> https://github.com/zalandoresearch/fashion-mnist, before you continue reading this project. If you already are aware of the dataset, this repository will give you an idea how you can create your deepCNN models in order to achieve as high accuracy as 98%.
 
-## Data-Preview
 ![Sample Fashion-MNIST dataset](screenshots/fashion-mnist-sprite.png)
 
 ## Dependencies:
@@ -70,17 +69,37 @@ To check all the options that are provided for flexibilty run below command and 
 
 ## Approach
 
-After trying different modifications to network architecture and data Augmentation techniques, we think following 3 models are worth showing the evolution to reach train accuracy of upto ~98.9%
+After trying different modifications to the network architecture (like Batch Normalization, different Dropout regularizers) and data Augmentation techniques, I think following 3 models are worth showing the evolution where I was able to reach train accuracy of upto ~98.9%
 
-| Architecture 1 | Architecture 2 | Architecture 3 |
-|---------------|-----------------|-----------------|
-|![Arch:1](./screenshots/Model_V1.png) | ![Arch:2](./screenshots/custom_Model.png) | ![Arch:3](./screenshots/VGG_Like-model.png) |
+| Architecture 1: 
+---------------|
+- Conv => Conv => MaxPool => Dropout => Conv => MaxPool => Dropout
+- 1 FC Layer
+
+|![Arch:1](./screenshots/Model_V1.png) |
+ 
+ | Architecture 2:
+ -----------------|
+ - 2-blocks of Conv => MaxPool => Dropout 
+ - 1 FC-layer
+ - Filter Size of 4x4
+ 
+ ![Arch:2](./screenshots/custom_Model.png) |
+
+ |Architecture 3- VGG_Like
+ -----------------|
+ 
+ - 2 sets of CONV => RELU => CONV => RELU => POOL block 
+ - and only 1 FC block, 
+ - Always using kernel size of 3 with stride 1.
+  
+  ![Arch:3](./screenshots/VGG_Like-model.png) |
 
 
 
 
 ## Results:
-- Training accuracy of upto 98.9% was achieved with VGG-Like model. Below you can find the Time complexity, paramters and accuracy comparision for the above 3 model architecture
+- Training accuracy of upto <b>98.9%</b> was achieved with VGG-Like model. Below you can find the Time complexity, paramters and accuracy comparision for the above 3 model architecture
 
 | Model | num_parameters | Time taken in secs(10 epoch) | Accuracy Achieved(10 epoch) |
 |---------------|-----------------|-----------------|-----------------|
@@ -94,12 +113,11 @@ From here on below results were gathered on the VGG-Like model trained for 80 ep
 Below you see how model accuracy is evolving over epoch.
 ![Accuracy_Plot](./screenshots/VGG_model-accuracyPlot.png)
 
-I also plotted a Confusion Matrix to see which Classes are learnt well by the network.
+I also plotted a <b>Confusion Matrix</b> to see which Classes are learnt well by the network. As can be seen in the confusion matrix the model gets confused quite a lot between "T-shirt-Top" and a "shirt", these 2 classes are quite difficult to distinguish.
 ![confusion matrix](./screenshots/Confusion-Matrix.png)
 
-As can be seen in the confusion matrix the model gets confused between "T-shirt-Top" and a "shirt" quite often, these 2 classes are quite difficult to distinguish.
 
-Furthermore maybe accuracy metrix is not good enough, we should also know how precise the model is, therefore for further evalutation, metrix like F-1 Score, Precision, Recall were also calculated and the results are shown below.
+Furthermore maybe accuracy metrix is not good enough, we should also know how precise the model is, therefore for further evalutation, metrix like <b>F-1 Score</b>, <b>Precision</b>, <b>Recall</b> were also calculated and the results are shown below.
 
 
 | Class | Name | precision | recall | F1-Score |
@@ -122,3 +140,6 @@ Furthermore maybe accuracy metrix is not good enough, we should also know how pr
 
 ## Future Work
 
+- More DataAugmentation: to further improve the results. If you carefully read the DataLoader code(util/dataLoader.py) which uses  ImageDataGenerator, where you can easily add already existing image-Augmentation techniques
+
+- Utilize TransferLearning Approach.
