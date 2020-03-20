@@ -140,7 +140,8 @@ Furthermore maybe accuracy metrix is not good enough, we should also know how pr
 ||macro avg|       0.95      |0.95|      0.95|  
 ||weighted avg|       0.95      |0.95|      0.95|
 
-Let's see some model predictions 
+Let's see some model predictions below
+
 ![predictions](screenshots/Model_Predictions.png)
 
 ## Future Work
