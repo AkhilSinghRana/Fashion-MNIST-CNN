@@ -37,7 +37,7 @@ Proposed Optionals:
 - virtualenv
 - pip 20.0.2 or above
 
-## Run Instructions
+## Setup Instructions
 
 This project was run on Ubuntu environment, this is not a dependency, but Windows machine was not tested(It would most probably still work on windows). Feel free to contact me for any troubleshooting.
 
