@@ -7,7 +7,7 @@
 - [Fashion-MNIST CNN Benchmarking Accuracy upto ~98%)](#fashion-mnist-cnn-benchmarking-accuracy-upto-98)
   - [Introduction:](#introduction)
   - [Dependencies:](#dependencies)
-  - [Run Instructions](#run-instructions)
+  - [Setup Instructions](#setup-instructions)
   - [Options for main.py](#options-for-mainpy)
   - [Approach](#approach)
   - [Results:](#results)
